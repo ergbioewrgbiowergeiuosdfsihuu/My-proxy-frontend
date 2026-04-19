@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultraviolet Browser</title>
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; background-color: #1a1a1a; color: white; }
+        input { width: 400px; padding: 15px; border-radius: 25px; border: none; outline: none; font-size: 16px; text-align: center; }
+        button { margin-top: 20px; padding: 10px 30px; border-radius: 20px; background: #DE5833; color: white; border: none; cursor: pointer; font-size: 16px; font-weight: bold; }
+        button:hover { background: #b84526; }
+    </style>
+    <script src="/uv/uv.bundle.js"></script>
+    <script src="/uv/uv.config.js"></script>
+</head>
+<body>
+
+    <h2>⚡ Ultraviolet Browser</h2>
+    <input type="text" id="url" placeholder="Search the web or enter a URL...">
+    <button onclick="go()">Browse</button>
+
+    <script>
+        navigator.serviceWorker.register('/sw.js', { scope: '/' });
+
+        function go() {
+            let input = document.getElementById('url').value.trim();
+            if (!input) return;
+
+            if (input.includes(' ') || !input.includes('.')) {
+                input = 'https://duckduckgo.com/?q=' + encodeURIComponent(input);
+            } else if (!input.startsWith('http://') && !input.startsWith('https://')) {
+                input = 'https://' + input;
+            }
+
+            const encodedUrl = __uv$config.encodeUrl(input);
+            window.location.href = __uv$config.prefix + encodedUrl;
+        }
+
+        document.getElementById('url').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') go();
+        });
+    </script>
+</body>
+</html>
